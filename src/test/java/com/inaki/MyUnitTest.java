@@ -1,5 +1,6 @@
 package com.inaki;
 
+import listener.MyEventListener;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.engine.test.Deployment;
 import org.flowable.engine.test.FlowableRule;
@@ -15,10 +16,15 @@ public class MyUnitTest {
 	@Rule
 	public FlowableRule flowableRule = new FlowableRule();
 
+    private MyEventListener myEventListener = new MyEventListener();
+
 	@Test
 	@Deployment(resources = {"com/inaki/my-process.bpmn20.xml"})
 	public void test() {
-		ProcessInstance processInstance = flowableRule.getRuntimeService().startProcessInstanceByKey("my-process");
+
+        flowableRule.getRuntimeService().addEventListener(myEventListener);
+
+        ProcessInstance processInstance = flowableRule.getRuntimeService().startProcessInstanceByKey("my-process");
 		assertNotNull(processInstance);
 
 		Task task = flowableRule.getTaskService().createTaskQuery().singleResult();
